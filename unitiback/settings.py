@@ -11,6 +11,14 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Access the secret
+MPESA_CALLBACK_SECRET = os.getenv('MPESA_CALLBACK_SECRET', 'default_fallback_secret')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,6 +36,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+
+AUTH_USER_MODEL = 'accounts.User'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,18 +49,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # my apps
-    "accounts",
-    "properties",
-    "tenants",
-    "invoicing",
-    "payments",
-    "tickets",
-    "listings",
-    "notifications",
-    "billing",
-    "audit",
-    "core",
+    # Third-party apps
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'axes',
+
+    # Project apps
+    'accounts',
+    'audit',
+    'billing',
+    'invoicing',
+    'listings',
+    'notifications',
+    'payments',
+    'properties',
+    'tenants',
+    'tickets',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'unitiback.urls'
@@ -88,8 +104,12 @@ WSGI_APPLICATION = 'unitiback.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'uniti_db',
+        'USER': 'uniti_user',
+        'PASSWORD': 'unitipassword',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -134,3 +154,44 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication', ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'stk_push': '3/minute',  # Max 3 STK push triggers per minute
+    } 
+    
+}
+
+# Africa's Talking Configuration
+AFRICASTALKING_USERNAME = 'sandbox'  # Or your live AT username
+AFRICASTALKING_API_KEY = 'YOUR_AT_API_KEY'  # Replace with AT API key when live
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1
+
+# Security settings (Production)
+DEBUG = False
+
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Protect against clickjacking and MIME sniffing
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Add a secret callback token (In production, load this from .env)
+MPESA_CALLBACK_SECRET = 'uniti_secure_mpesa_cb_token_9988'
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

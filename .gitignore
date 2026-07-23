@@ -1,0 +1,18 @@
+# Environment variables (SECRETS!)
+.env
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Python bytecode & cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database (if any local testing copies exist)
+*.sqlite3
+
+# OS generated files
+.DS_Store

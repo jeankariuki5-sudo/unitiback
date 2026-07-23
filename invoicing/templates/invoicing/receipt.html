@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 15mm;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+        }
+        .header {
+            border-bottom: 2px solid #0284c7;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+            float: right;
+        }
+        .details-grid {
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        .details-grid td {
+            vertical-align: top;
+            padding: 4px 0;
+        }
+        .label {
+            color: #64748b;
+            font-weight: 600;
+        }
+        table.items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 25px;
+        }
+        table.items th {
+            background-color: #f1f5f9;
+            text-align: left;
+            padding: 10px;
+            font-size: 12px;
+            color: #475569;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        table.items td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .total-box {
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 11px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <span class="badge">OFFICIAL RECEIPT</span>
+        <div class="company-name">UNITI PROPERTY MANAGEMENT</div>
+        <div style="color: #64748b; font-size: 12px; margin-top: 4px;">Receipt #REC-{{ payment.id }}</div>
+    </div>
+
+    <table class="details-grid">
+        <tr>
+            <td width="50%">
+                <span class="label">Billed To:</span><br>
+                <strong>{{ invoice.tenant.full_name|default:invoice.tenant.email }}</strong><br>
+                Unit {{ invoice.unit.unit_number }}<br>
+                Phone: {{ invoice.tenant.phone_number|default:"N/A" }}
+            </td>
+            <td width="50%" style="text-align: right;">
+                <span class="label">Payment Date:</span> {{ payment.created_at|date:"M d, Y H:i" }}<br>
+                <span class="label">Payment Method:</span> {{ payment.payment_method }}<br>
+                <span class="label">Reference / M-Pesa Ref:</span> <strong>{{ payment.mpesa_receipt_number }}</strong>
+            </td>
+        </tr>
+    </table>
+
+    <table class="items">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Due Date</th>
+                <th style="text-align: right;">Amount Paid (KES)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Rent Payment - Unit {{ invoice.unit.unit_number }} (Invoice #{{ invoice.id }})</td>
+                <td>{{ invoice.due_date }}</td>
+                <td style="text-align: right;">{{ payment.amount|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="total-box">
+        Total Paid: KES {{ payment.amount|floatformat:2 }}
+    </div>
+
+    <div class="footer">
+        Thank you for your payment! This is an automatically generated receipt.<br>
+        For inquiries, please contact your property manager.
+    </div>
+
+</body>
+</html>
