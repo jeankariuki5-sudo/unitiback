@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
+    'corsheaders',
     'rest_framework_simplejwt',
     'axes',
 
@@ -76,6 +77,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'unitiback.urls'
@@ -195,3 +197,11 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 MPESA_CALLBACK_SECRET = 'uniti_secure_mpesa_cb_token_9988'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# If passing cookies/credentials in DRF:
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Vite default
+    "http://localhost:3000",  # React / Next.js default
+]
