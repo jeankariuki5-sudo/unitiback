@@ -6,6 +6,8 @@ class InvoiceSerializer(serializers.ModelSerializer):
     tenant_email = serializers.ReadOnlyField(source='tenant.email')
     unit_number = serializers.ReadOnlyField(source='unit.unit_number')
     property_name = serializers.ReadOnlyField(source='unit.property.name')
+    amount = serializers.ReadOnlyField()
+    is_prorated = serializers.BooleanField(read_only=True)  # Add this line
 
     class Meta:
         model = Invoice
