@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import os
+import dj_database_url
 
 # Load environment variables from .env file
 load_dotenv()
@@ -54,6 +56,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
     'axes',
+    'drf_spectacular',
 
     # Project apps
     'accounts',
@@ -70,6 +73,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -104,15 +108,12 @@ WSGI_APPLICATION = 'unitiback.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# Fallback to local config if DATABASE_URL environment variable isn't set
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'uniti_db',
-        'USER': 'uniti_user',
-        'PASSWORD': 'unitipassword',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600
+    )
 }
 
 
@@ -158,6 +159,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication', ),
@@ -205,3 +207,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite default
     "http://localhost:3000",  # React / Next.js default
 ]
+
+ALLOWED_HOSTS = ['*']
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
