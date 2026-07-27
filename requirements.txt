@@ -2,6 +2,7 @@ Django>=5.0,<6.0
 djangorestframework
 djangorestframework-simplejwt
 django-cors-headers
+django-axes
 drf-spectacular
 dj-database-url
 whitenoise
