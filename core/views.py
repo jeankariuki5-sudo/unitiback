@@ -11,11 +11,15 @@ from django.db.models import Sum, Count, Q
 from invoicing.models import Invoice
 from payments.models import Payment, Dispute
 from properties.models import Property, Unit
+from drf_spectacular.utils import extend_schema
 
 class LandlordDashboardStatsView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
+    @extend_schema(
+        summary="Get Landlord Dashboard Statistics",
+        responses={200: LandlordDashboardStatsSerializer}  # Replace with your stats serializer if you have one, or dict
+    )
     def get(self, request):
+        # your view logic...
         user = request.user
         if getattr(user, 'role', '') != 'LANDLORD':
             return Response({'error': 'Only landlords can access dashboard stats.'}, status=status.HTTP_403_FORBIDDEN)
@@ -57,12 +61,12 @@ class LandlordDashboardStatsView(APIView):
         }, status=status.HTTP_200_OK)
 
 class SystemHealthCheckView(APIView):
-    """
-    Public health check endpoint for monitoring uptime and DB status.
-    """
-    permission_classes = [permissions.AllowAny]
-
+    @extend_schema(
+        summary="System Health Check",
+        responses={200: dict}
+    )
     def get(self, request):
+        # your view logic...
         try:
             connection.ensure_connection()
             db_status = "Healthy"
