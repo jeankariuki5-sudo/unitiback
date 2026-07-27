@@ -18,8 +18,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.views.generic import RedirectView
+
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='/api/docs/', permanent=False)),
     path('management-portal-secure-x89/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/accounts/', include('accounts.urls')),
