@@ -12,3 +12,4 @@ requests
 pillow
 python-dotenv
 weasyprint
+africastalking
